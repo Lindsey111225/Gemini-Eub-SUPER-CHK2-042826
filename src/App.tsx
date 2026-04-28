@@ -223,6 +223,8 @@ export default function App() {
   const [docViewMode, setDocViewMode] = useState<'text' | 'markdown'>('markdown');
   const [resultsViewMode, setResultsViewMode] = useState<'text' | 'markdown'>('markdown');
   const [trimPagesInput, setTrimPagesInput] = useState('');
+  const [pasteDocInput, setPasteDocInput] = useState('');
+  const [docSourceType, setDocSourceType] = useState<'upload' | 'paste'>('upload');
 
   const [agent1, setAgent1] = useState<Agent>({
     id: 'a1',
@@ -899,15 +901,62 @@ ${docText}
                         <Upload className="w-5 h-5 text-accent-red" />
                         Regulatory Source
                       </h3>
-                      
-                      <div className="relative group">
-                        <label className="block w-full text-center border-2 border-dashed border-ink p-8 bg-stone-50 cursor-pointer hover:bg-stone-100 transition-all">
-                          <input type="file" className="hidden" accept=".pdf,.txt,.md" onChange={handleFileUpload} />
-                          <Activity className="w-12 h-12 mx-auto mb-4 opacity-20 group-hover:scale-110 transition-transform" />
-                          <p className="text-xs font-black uppercase tracking-tighter">Click to Upload doc</p>
-                          <p className="text-[10px] opacity-40 mt-2">PDF, Markdown or Text (Max 50MB)</p>
-                        </label>
+
+                      <div className="flex gap-2 mb-4 border-b border-ink pb-2">
+                        <button 
+                          onClick={() => setDocSourceType('upload')}
+                          className={cn(
+                            "text-[10px] font-bold px-3 py-1 transition-all",
+                            docSourceType === 'upload' ? "bg-ink text-white" : "opacity-40 hover:opacity-100"
+                          )}
+                        >
+                          FILE UPLOAD
+                        </button>
+                        <button 
+                          onClick={() => setDocSourceType('paste')}
+                          className={cn(
+                            "text-[10px] font-bold px-3 py-1 transition-all",
+                            docSourceType === 'paste' ? "bg-ink text-white" : "opacity-40 hover:opacity-100"
+                          )}
+                        >
+                          PASTE TEXT
+                        </button>
                       </div>
+                      
+                      {docSourceType === 'upload' ? (
+                        <div className="relative group">
+                          <label className="block w-full text-center border-2 border-dashed border-ink p-8 bg-stone-50 cursor-pointer hover:bg-stone-100 transition-all">
+                            <input type="file" className="hidden" accept=".pdf,.txt,.md" onChange={handleFileUpload} />
+                            <Activity className="w-12 h-12 mx-auto mb-4 opacity-20 group-hover:scale-110 transition-transform" />
+                            <p className="text-xs font-black uppercase tracking-tighter">Click to Upload doc</p>
+                            <p className="text-[10px] opacity-40 mt-2">PDF, Markdown or Text (Max 50MB)</p>
+                          </label>
+                        </div>
+                      ) : (
+                        <div className="space-y-3">
+                          <textarea 
+                            className="w-full h-32 p-3 bg-stone-50 border border-ink text-xs focus:outline-none resize-none font-mono"
+                            placeholder="Paste your regulatory source text here..."
+                            value={pasteDocInput}
+                            onChange={(e) => setPasteDocInput(e.target.value)}
+                          />
+                          <button 
+                            onClick={() => {
+                              if (!pasteDocInput.trim()) return;
+                              setInterrogationDoc({
+                                name: 'Pasted Document',
+                                type: 'text',
+                                content: pasteDocInput
+                              });
+                              addLog('Pasted document ingested.', 'info');
+                              triggerWow(2);
+                            }}
+                            className="w-full py-2 bg-ink text-white text-[10px] font-bold border border-ink hover:bg-accent-red transition-all"
+                          >
+                            APPLY PASTE
+                          </button>
+                        </div>
+                      )}
 
                       {interrogationDoc && (
                         <div className="mt-6 p-4 border border-ink bg-stone-50 animate-in fade-in slide-in-from-top-2">
