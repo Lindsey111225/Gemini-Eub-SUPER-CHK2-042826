@@ -1,0 +1,15 @@
+{
+  "name": "MDMDS Pro: Regulatory Intelligence System",
+  "description": "An advanced editorial-grade decision support system for medical device regulatory affairs, featuring AI-powered document auditing and automated logic engines.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone",
+    "geolocation"
+  ],
+  "majorCapabilities": [
+    "AI Document Auditing",
+    "Regulatory Logic Engine",
+    "Editorial Design System",
+    "Multi-Agent Chain Processing"
+  ]
+}
